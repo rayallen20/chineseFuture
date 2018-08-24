@@ -18,5 +18,8 @@ Route::get('/', function () {
 // 发送验证码
 Route::post('/v1/user/sendVerificationCode', 'v1\UserController@sendVerificationCode');
 
-// 密码注册
+// 密码注册登录
 Route::post('/v1/user/registerByPassword', 'v1\UserController@registerByPassword');
+
+// 短信验证码登录
+Route::post('/v1/user/loginByMsgCode', 'v1\UserController@loginByMsgCode');

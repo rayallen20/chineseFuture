@@ -145,4 +145,20 @@ class User extends Model
         $saveResult = $userInfo->save();
         return $saveResult;
     }
+
+    /**
+     * 本方法用于根据user表的mobile字段值和msg_code字段值查找1条数据
+     * @access public
+     * @author 杨磊<40486453@qq.com>
+     * @param string $mobile mobile字段值
+     * @param string $msgCode msg_code字段值
+     * @return \App\Http\Models\User|null 查找到信息返回ORM 否则返回null
+    */
+    public function findInfoByMobileAndMsgCode($mobile, $msgCode)
+    {
+        $info = $this->where('mobile', $mobile)
+            ->where('msg_code', $msgCode)
+            ->first();
+        return $info;
+    }
 }
