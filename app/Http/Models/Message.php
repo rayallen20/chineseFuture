@@ -13,7 +13,7 @@ class Message extends Model
 
     /**
      * 主键
-     * @var string $primaryKey =
+     * @var string $primaryKey
      */
     protected $primaryKey = 'id';
 
@@ -34,6 +34,12 @@ class Message extends Model
      * @var string UPDATE_AT
      */
     const UPDATED_AT = 'update_time';
+
+    /**
+     * 黑名单字段
+     * @var array $guarded
+     */
+    protected $guarded = [];
 
     /**
      * 短信发送结果 即send_result字段的枚举值

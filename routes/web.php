@@ -15,4 +15,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::post('/user/sendVerificationCode', 'v1\UserController@sendVerificationCode');
+// 发送验证码
+Route::post('/v1/user/sendVerificationCode', 'v1\UserController@sendVerificationCode');
+
+// 密码注册
+Route::post('/v1/user/registerByPassword', 'v1\UserController@registerByPassword');

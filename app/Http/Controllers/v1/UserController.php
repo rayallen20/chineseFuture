@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers\v1;
 use App\Http\Models\Message;
+use App\Http\Models\Token;
 use App\Http\Models\User;
 use chineseFuture\ExceptionMessage;
 use chineseFuture\ServerConfig;
@@ -59,7 +60,18 @@ class UserController extends ServerController
 
         // step4. 将短信的具体内容 发送结果 短信接收者 存入数据库 end
 
-        // step5. 生成返回json start
+        // step5. 更新该用户的当前验证码 start
+
+        $saveCodeResult = $userInfo->saveMsgCode($userInfo, $code);
+        if(!$saveCodeResult)
+        {
+            $resultJson = ExceptionMessage::generateSaveFailJson($userModel->getTable());
+            return $resultJson;
+        }
+
+        // step5. 更新该用户的当前验证码 end
+
+        // step6. 生成返回json start
 
         $data[] = [
             'sendResult' => $sendResultArr['result'],
@@ -67,8 +79,100 @@ class UserController extends ServerController
         $resultJson = ExceptionMessage::generateSuccessJson($data);
         return $resultJson;
 
-        // step5. 生成返回json end
+        // step6. 生成返回json end
     }
 
+    /**
+     * 本方法用于用户根据密码注册并发放token
+     * @access public
+     * @author 杨磊<40486453@qq.com>
+     * @param \Illuminate\Http\Request $request 请求组件 实际参数为:
+     * $mobile string 用户手机号
+     * $password string 用户设置的密码
+     * $confirmPassword string 用户再次输入的确认密码
+     * @return string $resultJson 返回json
+    */
+    public function registerByPassword(Request $request)
+    {
+        // step1. 接收参数 验证空值 start
 
+        $mobile = $request->post('mobile');
+        $password = $request->post('password');
+        $confirmPassword = $request->post('confirmPassword');
+
+        $paramIsNull = parent::checkParamIsNull($mobile, $password, $confirmPassword);
+        if(!$paramIsNull)
+        {
+            $resultJson = ExceptionMessage::generateParamNullJson();
+            return $resultJson;
+        }
+
+        // step1. 接收参数 验证空值 end
+
+        // step2. 确认该手机号在user表中是否存在 如果已存在 则不能注册 start
+
+        $userModel = new User();
+        $userInfo = $userModel->firstOrCreateInfoByMobile($mobile);
+        if(!$userInfo->wasRecentlyCreated)
+        {
+            $resultJson = ExceptionMessage::generateMobileHasExistJson();
+            return $resultJson;
+        }
+
+        // step2. 确认该手机号在user表中是否存在 如果已存在 则不能注册 end
+
+        // step3. 确认2次输入的密码是否一致 start
+
+        if($password != $confirmPassword)
+        {
+            $resultJson = ExceptionMessage::generateParamNullJson();
+            return $resultJson;
+        }
+
+        // step3. 确认2次输入的密码是否一致 end
+
+        // step4. 保存用户密码 start
+
+        $password = parent::md5EncryptStr($password);
+        $savePasswordResult = $userInfo->savePassword($userInfo, $password);
+        if(!$savePasswordResult)
+        {
+            $resultJson = ExceptionMessage::generateSaveFailJson($userModel->getTable());
+            return $resultJson;
+        }
+
+        // step4. 保存用户密码 end
+
+        // step5. 为该用户生成token start
+
+        $token = parent::generateToken($mobile);
+
+        // step5. 为该用户生成token end
+
+        // step6. 保存token至数据库 start
+
+        $userId = $userInfo->id;
+        $grantDateTime = parent::getDateTimeByTimestamp();
+        $expireDateTime = parent::generateDiffDayDateTime(ServerConfig::TOKEN_VALID_DAY);
+        $tokenModel = new Token();
+        $saveTokenResult = $tokenModel->insertInfoByUserIdAndTokenAndDateTime($userId, $token, $grantDateTime, $expireDateTime);
+        if(!$saveTokenResult)
+        {
+            $resultJson = ExceptionMessage::generateSaveFailJson($tokenModel->getTable());
+            return $resultJson;
+        }
+
+        // step6. 保存token至数据库 end
+
+        // step7. 生成返回json start
+
+        $data[] = [
+            'userId' => $userId,
+            'accessToken' => $token
+        ];
+        $resultJson = ExceptionMessage::generateSuccessJson($data);
+        return $resultJson;
+
+        // step7. 生成返回json end
+    }
 }

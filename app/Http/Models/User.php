@@ -13,7 +13,7 @@ class User extends Model
 
     /**
      * 主键
-     * @var string $primaryKey =
+     * @var string $primaryKey
     */
     protected $primaryKey = 'id';
 
@@ -114,5 +114,35 @@ class User extends Model
         ];
         $info = $this->firstOrCreate($arr);
         return $info;
+    }
+
+    /**
+     * 本方法用于更新1条user表数据的msg_code字段值
+     * @access public
+     * @author 杨磊 <40486453@qq.com>
+     * @param \App\Http\Models\User $userInfo user表信息ORM
+     * @param string $msgCode msg_code字段值
+     * @return bool $saveResult true为更新成功 false为更新失败
+    */
+    public function saveMsgCode($userInfo, $msgCode)
+    {
+        $userInfo->msg_code = $msgCode;
+        $saveResult = $userInfo->save();
+        return $saveResult;
+    }
+
+    /**
+     * 本方法用于更新1条user表数据的password字段值
+     * @access public
+     * @author 杨磊 <40486453@qq.com>
+     * @param \App\Http\Models\User $userInfo user表信息ORM
+     * @param string $password password字段值
+     * @return bool $saveResult true为更新成功 false为更新失败
+    */
+    public function savePassword($userInfo, $password)
+    {
+        $userInfo->password = $password;
+        $saveResult = $userInfo->save();
+        return $saveResult;
     }
 }
