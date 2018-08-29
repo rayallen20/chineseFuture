@@ -23,3 +23,6 @@ Route::post('/v1/user/registerByPassword', 'v1\UserController@registerByPassword
 
 // 短信验证码登录
 Route::post('/v1/user/loginByMsgCode', 'v1\UserController@loginByMsgCode');
+
+// 增加教师信息
+Route::post('/v1/teacher/addTeacher', 'v1\TeacherController@addTeacher');
