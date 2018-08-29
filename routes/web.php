@@ -26,3 +26,6 @@ Route::post('/v1/user/loginByMsgCode', 'v1\UserController@loginByMsgCode');
 
 // 增加教师信息
 Route::post('/v1/teacher/addTeacher', 'v1\TeacherController@addTeacher');
+
+// 增加科目信息
+Route::post('/v1/subject/addSubject', 'v1\SubjectController@addSubject');

@@ -44,6 +44,7 @@ class Message extends Model
     /**
      * 短信发送结果 即send_result字段的枚举值
      * @var array SEND_RESULT
+     * 其中: success:发送成功 fail:发送失败
     */
     const SEND_RESULT = [
         'success' => 'success',

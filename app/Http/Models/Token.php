@@ -44,6 +44,7 @@ class Token extends Model
     /**
      * token是否有效 即is_valid字段的枚举值
      * @var array IS_VALID
+     * 其中: valid:有效token invalid:无效token
     */
     const IS_VALID = [
         'valid' => 'valid',

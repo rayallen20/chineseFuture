@@ -91,7 +91,7 @@ class TeacherController extends ServerController
     private function checkGradeIds($gradeIdArr)
     {
         $gradeModel = new Grade();
-        $gradeInfoNum = $gradeModel->countInfoByIdsAndNameIsNotNull($gradeIdArr);
+        $gradeInfoNum = $gradeModel->countInfoByIdArrAndNameIsNotNull($gradeIdArr);
         $gradeIdNum = count($gradeIdArr);
         if($gradeInfoNum == $gradeIdNum)
         {

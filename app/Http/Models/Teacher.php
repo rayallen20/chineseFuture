@@ -44,6 +44,7 @@ class Teacher extends Model
     /**
      * 教师状态
      * @var array STATE
+     * 其中: normal:正常状态 ban:被封禁状态
      */
     const STATE = [
         'normal' => 'normal',
@@ -79,5 +80,20 @@ class Teacher extends Model
             $teacherId = $this->id;
         }
         return $teacherId;
+    }
+
+    /**
+     * 本方法用于根据id字段值集合在teacher表中查找对应数据的条数
+     * @access public
+     * @author 杨磊<40484653@qq.com>
+     * @param array $idArr id字段值数组
+     * @return int $infoNum 数据条数
+    */
+    public function countInfoByIdArr($idArr)
+    {
+        $infoNum = $this->whereIn('id', $idArr)
+            ->where('state', self::STATE['normal'])
+            ->count();
+        return $infoNum;
     }
 }

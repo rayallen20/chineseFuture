@@ -48,7 +48,7 @@ class Grade extends Model
      * @param array $idArr id信息集合
      * @return int $infoNum 符合条件的数据条数
     */
-    public function countInfoByIdsAndNameIsNotNull($idArr)
+    public function countInfoByIdArrAndNameIsNotNull($idArr)
     {
         $infoNum = $this->whereIn('id', $idArr)
             ->whereNotNull('name')
