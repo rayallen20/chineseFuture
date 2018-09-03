@@ -3,13 +3,13 @@ namespace App\Http\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Grade extends Model
+class Category extends Model
 {
     /**
      * 表名
      * @var string $table
      */
-    protected $table = 'grade';
+    protected $table = 'category';
 
     /**
      * 主键
@@ -42,28 +42,13 @@ class Grade extends Model
     protected $guarded = [];
 
     /**
-     * 本方法用于根据grade表的id字段值集合查找对应数据中 name字段值不为空的数据条数
-     * @access public
-     * @author 杨磊<40486453@qq.com>
-     * @param array $idArr id信息集合
-     * @return int $infoNum 符合条件的数据条数
-    */
-    public function countInfoByIdArrAndNameIsNotNull($idArr)
-    {
-        $infoNum = $this->whereIn('id', $idArr)
-            ->whereNotNull('name')
-            ->count();
-        return $infoNum;
-    }
-
-    /**
-     * 本方法用于查找grade表中的全部id字段值
+     * 本方法用于查找Category表中所有id字段值
      * @access public
      * @author 杨磊<40486453@qq.com>
      * @param void
      * @return \Illuminate\Support\Collection $infos 全部id字段值集合
     */
-    public function findAllGradeId()
+    public function findAllCategoryId()
     {
         $infos = $this->select('id')->get();
         return $infos;

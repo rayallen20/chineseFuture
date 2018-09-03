@@ -1,6 +1,8 @@
 <?php
 namespace App\Http\Controllers\v1;
 
+use App\Http\Models\Category;
+use App\Http\Models\Grade;
 use App\Http\Models\Subject;
 use App\Http\Models\Teacher;
 use chineseFuture\ExceptionMessage;
@@ -30,7 +32,8 @@ class SubjectController extends ServerController
     {
         // step1. 接受参数 验证字符串类型参数空值 start
         $title = $request->post('title');
-        $kind = $request->post('kind');
+        $gradeId = $request->post('gradeId');
+        $categoryId = $request->post('categoryId');
         $teacherIds = $request->post('teacherIds');
         $desc = $request->post('desc');
         $subjectImg = $request->post('subjectImg');
@@ -57,16 +60,29 @@ class SubjectController extends ServerController
         }
         // step2. 验证数字类型参数是否合法 end
 
-        // step3. 验证枚举类型参数是否合法 start
-        $enumParamIsValid = self::checkEnumParamIsValid($kind, $isOnline);
-        if(!$enumParamIsValid)
+        // step3. 验证年级id是否在数据库中存在 start
+
+        $gradeIdIsValid = self::checkGradeIdValid($gradeId);
+        if(!$gradeIdIsValid)
         {
-            $resultJson = ExceptionMessage::generateEnumerationParamInvalidJson();
+            $resultJson = ExceptionMessage::generateGradeIdInvalidJson();
             return $resultJson;
         }
-        // step3. 验证枚举类型参数是否合法 end
 
-        // step4. 验证教师id集合对应的信息是否在数据库中均存在 start
+        // step3. 验证年级id是否在数据库中存在 end
+
+        // step4. 验证课程种类id是否在数据库中存在 start
+
+        $categoryIdIsValid = self::checkCategoryIdValid($categoryId);
+        if(!$categoryIdIsValid)
+        {
+            $resultJson = ExceptionMessage::generateCategoryIdInvalidJson();
+            return $resultJson;
+        }
+
+        // step4. 验证课程种类id是否在数据库中存在 end
+
+        // step5. 验证教师id集合对应的信息是否在数据库中均存在 start
         $teacherIdArr = parent::convertStrToArr(',', $teacherIds);
         $teacherIdsIsValid = self::checkTeacherIdsIsValid($teacherIdArr);
         if(!$teacherIdsIsValid)
@@ -74,11 +90,23 @@ class SubjectController extends ServerController
             $resultJson = ExceptionMessage::generateTeacherIdsInvalidJson();
             return $resultJson;
         }
-        // step4. 验证教师id集合对应的信息是否在数据库中均存在 end
+        // step5. 验证教师id集合对应的信息是否在数据库中均存在 end
 
-        // step5. 将信息存入subject表 start
+        // step6. 验证isOnline字段值是否合法 start
+
+        $isOnlineIsValid = self::checkIsOnlineValid($isOnline);
+        if(!$isOnlineIsValid)
+        {
+            $resultJson = ExceptionMessage::generateIsOnlineInvalidJson();
+            return $resultJson;
+        }
+
+        // step6. 验证isOnline字段值是否合法 end
+
+        // step7. 将信息存入subject表 start
         $info['title'] = $title;
-        $info['kind'] = $kind;
+        $info['gradeId'] = $gradeId;
+        $info['categoryId'] = $categoryId;
         $info['teacherIds'] = $teacherIds;
         $info['desc'] = $desc;
         $info['subjectImg'] = $subjectImg;
@@ -99,31 +127,51 @@ class SubjectController extends ServerController
         $data[]['saveResult'] = 'success';
         $resultJson = ExceptionMessage::generateSuccessJson($data);
         return $resultJson;
-        // step5. 将信息存入subject表 end
+        // step7. 将信息存入subject表 end
+    }
+
+
+
+    /**
+     * 本方法用于检测年级id是否在数据库中存在
+     * @access private
+     * @author 杨磊<40486453@qq.com>
+     * @param int $gradeId 前端传入年级ID
+     * @return bool true表示存在 false表示不存在
+    */
+    private function checkGradeIdValid($gradeId)
+    {
+        $gradeModel = new Grade();
+        $allGradeIdArr = $gradeModel->findAllGradeId()->toArray();
+        foreach ($allGradeIdArr as $key => $value)
+        {
+            if($value['id'] == $gradeId)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
-     * 本方法用于检测枚举类型参数值 是否在其对应的数组中存在
+     * 本方法用于检测课程种类id是否在数据库中存在
      * @access private
      * @author 杨磊<40486453@qq.com>
-     * @param string $kind 科目种类 该值应存在于Subject::KIND中
-     * @param string $isOnline 科目授课形式 该值应该存在于Subject::IS_ONLINE中
-     * @return bool true表示枚举值在对应数组中均存在 false表示有枚举值在对应数组中不存在
-     *
+     * @param int $categoryId 前端传入种类ID
+     * @return bool true表示存在 false表示不存在
     */
-    private function checkEnumParamIsValid($kind, $isOnline)
+    private function checkCategoryIdValid($categoryId)
     {
-        if(!in_array($kind, Subject::KIND))
+        $categoryModel = new Category();
+        $allCategoryIdArr = $categoryModel->findAllCategoryId()->toArray();
+        foreach ($allCategoryIdArr as $key => $value)
         {
-            return false;
+            if($value['id'] == $categoryId)
+            {
+                return true;
+            }
         }
-
-        if(!in_array($isOnline, Subject::IS_ONLINE))
-        {
-            return false;
-        }
-
-        return true;
+        return false;
     }
 
     /**
@@ -146,5 +194,21 @@ class SubjectController extends ServerController
         {
             return false;
         }
+    }
+
+    /**
+     * 本方法用于检测isOnline字段值是否合法
+     * @access private
+     * @author 杨磊<40486453@qq.com>
+     * @param string $isOnline
+     * @return bool true表示合法 false表示不合法
+    */
+    private function checkIsOnlineValid($isOnline)
+    {
+        if(in_array($isOnline, Subject::IS_ONLINE))
+        {
+            return true;
+        }
+        return false;
     }
 }

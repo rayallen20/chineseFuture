@@ -42,24 +42,6 @@ class Subject extends Model
     protected $guarded = [];
 
     /**
-     * 科目种类 即kind字段枚举值
-     * @var array KIND
-     * 其中: spring:春季班 summer:暑期班 autumn:秋季班 winter:寒假班
-     *      fromPrimaryToJuniorMiddleSchool:小升初班
-     *      collegeEntranceExamination:高考班
-     *      siChenWriting:思晨写作
-    */
-    const KIND = [
-        'spring' => 'spring',
-        'summer' => 'summer',
-        'autumn' => 'autumn',
-        'winter' => 'winter',
-        'fromPrimaryToJuniorMiddleSchool' => 'fromPrimaryToJuniorMiddleSchool',
-        'collegeEntranceExamination' => 'collegeEntranceExamination',
-        'siChenWriting' => 'siChenWriting',
-    ];
-
-    /**
      * 科目状态 即state字段枚举值
      * @var array STATE
      * 其中: normal:科目状态正常 outOfStock:科目已售完 soldOut:下架
@@ -98,7 +80,7 @@ class Subject extends Model
      * @param $infoArr
      * 其中:
      *      title:科目标题
-     *      kind:科目种类
+     *      categoryId:科目种类
      *      teacherIds:科目任课教师id集合
      *      desc:科目描述
      *      subjectImg:科目宣传图片
@@ -112,8 +94,9 @@ class Subject extends Model
     public function saveSubjectInfo($infoArr)
     {
         $this->title = $infoArr['title'];
-        $this->kind = $infoArr['kind'];
-        $this->teacherIds = $infoArr['teacherIds'];
+        $this->grade_id = $infoArr['gradeId'];
+        $this->category_id = $infoArr['categoryId'];
+        $this->teacher_ids = $infoArr['teacherIds'];
         $this->desc = $infoArr['desc'];
         $this->subject_img = $infoArr['subjectImg'];
         $this->subject_price = $infoArr['subjectPrice'];
