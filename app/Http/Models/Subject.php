@@ -109,4 +109,39 @@ class Subject extends Model
         $saveResult = $this->save();
         return $saveResult;
     }
+
+    /**
+     * 本方法用于根据科目id字段值在subject表中查找1条信息
+     * @access public
+     * @author 杨磊<40486453@qq.com>
+     * @param int $id
+     * @return \App\Http\Models\Subject|null $info 查找到信息返回该信息的ORM 否则返回null
+    */
+    public function findInfoById($id)
+    {
+        $info = $this->where('id', $id)->first();
+        return $info;
+    }
+
+    /**
+     * 本方法用于定义subject表和category表之间通过subject.category_id和category.id建立的1对1的关系
+     * @access public
+     * @author 杨磊<40486453@qq.com>
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+    */
+    public function category()
+    {
+        return $this->hasOne('App\Http\Models\Category', 'id', 'category_id');
+    }
+
+    /**
+     * 本方法用于定义subject表和grade表之间通过subject.grade_id和grade.id建立的1对1的关系
+     * @access public
+     * @author 杨磊<40486453@qq.com>
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+    */
+    public function grade()
+    {
+        return $this->hasOne('App\Http\Models\Grade', 'id', 'grade_id');
+    }
 }

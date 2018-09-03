@@ -96,4 +96,17 @@ class Teacher extends Model
             ->count();
         return $infoNum;
     }
+
+    /**
+     * 本方法用于根据id字段值在teacher表中查找(IN查询)多条数据
+     * @access public
+     * @author 杨磊<40486453@qq.com>
+     * @param array $idArr id字段值数组
+     * @return \Illuminate\Support\Collection $infos 符合条件的数据ORM集合
+    */
+    public function findInfoInIdArr($idArr)
+    {
+        $infos = $this->whereIn('id', $idArr)->get();
+        return $infos;
+    }
 }

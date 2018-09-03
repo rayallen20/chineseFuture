@@ -211,4 +211,66 @@ class SubjectController extends ServerController
         }
         return false;
     }
+
+    /**
+     * 本方法用于添加课程信息时 展示科目信息
+     * @access public
+     * @author 杨磊<40486453@qq.com>
+     * @param \Illuminate\Http\Request $request 请求组件 实际参数为
+     * int $subjectId 科目信息ID
+     * @return string $resultJson
+    */
+    public function showSubjectInfoOnAddLesson(Request $request)
+    {
+        // step1. 接收参数 验证空值 start
+
+        $subjectId = (int)$request->post('subjectId');
+        $paramIsValid = parent::checkParamIsLessThanZero($subjectId);
+        if(!$paramIsValid)
+        {
+            $resultJson = ExceptionMessage::generateNumParamLessThanZeroJson();
+            return $resultJson;
+        }
+
+        // step1. 接收参数 验证空值 end
+
+        // step2. 查找科目信息 start
+
+        $subjectModel = new Subject();
+        $subjectInfo = $subjectModel->findInfoById($subjectId);
+        if(is_null($subjectInfo))
+        {
+            $resultJson = ExceptionMessage::generateSubjectNotExistJson();
+            return $resultJson;
+        }
+
+        // step2. 查找科目信息 end
+
+        // step3. 查找科目对应的教师信息 start
+
+        $teacherIdArr = parent::convertStrToArr(',', $subjectInfo->teacher_ids);
+        $teacherModel = new Teacher();
+        $teacherInfos = $teacherModel->findInfoInIdArr($teacherIdArr);
+        foreach ($teacherInfos as $key => $value)
+        {
+            $teacherInfoArr[$key]['id'] = $value->id;
+            $teacherInfoArr[$key]['name'] = $value->name;
+        }
+
+        // step3. 查找科目对应的教师信息 end
+
+        // step4. 封装返回信息 start
+
+        $subjectArr['subjectId'] = $subjectInfo->id;
+        $subjectArr['title'] = $subjectInfo->title;
+        $subjectArr['subjectPrice'] = $subjectInfo->subject_price;
+        $subjectArr['lessonNum'] = $subjectInfo->lesson_num;
+        $data[]['subjectInfo'] = $subjectArr;
+        $data[]['teacherInfos'] = $teacherInfoArr;
+
+        // step4. 封装返回信息 end
+
+        $resultJson = ExceptionMessage::generateSuccessJson($data);
+        return $resultJson;
+    }
 }
