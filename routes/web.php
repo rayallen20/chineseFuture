@@ -32,3 +32,6 @@ Route::post('/v1/subject/addSubject', 'v1\SubjectController@addSubject');
 
 // 添加课程时展示科目信息
 Route::post('/v1/subject/showSubjectInfoOnAddLesson', 'v1\SubjectController@showSubjectInfoOnAddLesson');
+
+// 添加课程信息
+Route::post('/v1/lessonOffline/addLessonOffline', 'v1\LessonOfflineController@addLessonOffline');

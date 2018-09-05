@@ -88,4 +88,20 @@ class Token extends Model
         $saveResult = $this->save();
         return $saveResult;
     }
+
+    /**
+     * 本方法用于在token表中根据user_id字段值和token字段值查询1条数据
+     * @access public
+     * @author 杨磊<40486453@qq.com>
+     * @param int $userId user_id字段值
+     * @param string $token token字段值
+     * @return \App\Http\Models\Token|null $info 查询到信息返回ORM 否则返回null
+    */
+    public function findInfoByUserIdAndToken(int $userId, string $token) :?Token
+    {
+        $info = $this->where('user_id', $userId)
+            ->where('access_token', $token)
+            ->first();
+        return $info;
+    }
 }

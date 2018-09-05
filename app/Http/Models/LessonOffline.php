@@ -2,6 +2,7 @@
 namespace App\Http\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class LessonOffline extends Model
 {
@@ -52,5 +53,34 @@ class LessonOffline extends Model
         'finished' => 'finished'
     ];
 
+    /**
+     * 本方法用于在lesson_offline表中插入多条线下课信息并更新对应的科目信息的上课时间和下课时间
+     * @access public
+     * @author 杨磊<40486453@qq.com>
+     * @param int $subjectId 科目信息ID
+     * @param array $lessonsOffline 待插入的线下课信息数组(已经按照上课时间升序排序完毕)
+     * @throws \Exception $exception 事务失败时的异常信息
+     * @return bool 事务成功返回true 否则返回false
+    */
+    public function saveLessonsInfoAndUpdateSubjectInfo(int $subjectId, array $lessonsOffline) :bool
+    {
+        DB::beginTransaction();
+        try
+        {
+            $insertResult = LessonOffline::insert($lessonsOffline);
 
+            $updateResult = Subject::where('id', $subjectId)->update(['start_time' => $lessonsOffline[0]['start_time'], 'end_time' => end($lessonsOffline)['end_time']]);
+
+            if($insertResult == true && $updateResult == 1)
+            {
+                DB::commit();
+                return true;
+            }
+        } catch (\Exception $exception)
+        {
+            DB::rollBack();
+            throw $exception;
+        }
+
+    }
 }
