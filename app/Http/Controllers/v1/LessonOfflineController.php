@@ -25,6 +25,8 @@ class LessonOfflineController extends ServerController
      * string $descs 课程简介集合 格式:课程简介1,课程简介2,...课程简介N
      * @return string $resultJson
     */
+    // TODO: 1. 整个调用链完全面向过程 毫无面向对象思想
+    // TODO: 2. 整个代码不具备复用性
     public function addLessonOffline(Request $request)
     {
         // step1. 接收参数 验证空值 鉴权 start
